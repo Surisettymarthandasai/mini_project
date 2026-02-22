@@ -23,7 +23,7 @@ def create_database_if_not_exists():
     db_config = {
         "NAME": os.getenv("DB_NAME", "academic_mgmt"),
         "USER": os.getenv("DB_USER", "root"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "mani@1486"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "root"),
         "HOST": os.getenv("DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("DB_PORT", "3306"),
     }
@@ -140,7 +140,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.getenv("DB_NAME", "academic_mgmt"),
         "USER": os.getenv("DB_USER", "root"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "mani@1486"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "root"),
         "HOST": os.getenv("DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("DB_PORT", "3306"),
         "OPTIONS": {"init_command": "SET sql_mode='STRICT_TRANS_TABLES'"},
