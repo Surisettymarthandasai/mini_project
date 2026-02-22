@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Subjects - Academic Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-book me-2"></i>Subjects
+    </h1>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-custom">
+        <thead>
+            <tr>
+                <th><i class="fas fa-code me-2"></i>Code</th>
+                <th><i class="fas fa-graduation-cap me-2"></i>Name</th>
+                <th><i class="fas fa-building me-2"></i>Department</th>
+                <th><i class="fas fa-calendar me-2"></i>Semester</th>
+                <th><i class="fas fa-star me-2"></i>Credits</th>
+                <th><i class="fas fa-chalkboard-teacher me-2"></i>Faculty</th>
+                {% if user_role == 'ADMIN' %}
+                <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td><span class="badge bg-primary">{{ subject.code }}</span></td>
+                <td><strong>{{ subject.name }}</strong></td>
+                <td>
+                    {% if subject.department %}
+                        <span class="badge bg-info">{{ subject.get_department_display }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Common</span>
+                    {% endif %}
+                </td>
+                <td>{{ subject.semester }}</td>
+                <td><span class="badge bg-success">{{ subject.credits }}</span></td>
+                <td>
+                    {% if subject.faculty %}
+                        <div>
+                            <strong>{{ subject.faculty.user.get_full_name|default:subject.faculty.user.username }}</strong>
+                            <br><small class="text-muted">{{ subject.faculty.employee_number }} • {{ subject.faculty.get_department_display }}</small>
+                        </div>
+                    {% else %}
+                        <span class="text-muted"><i class="fas fa-user-times me-1"></i> Not Assigned</span>
+                    {% endif %}
+                </td>
+                {% if user_role == 'ADMIN' %}
+                <td>
+                    {% if subject.faculty %}
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'academics:subject_assign_faculty' subject.pk %}" class="btn btn-sm btn-outline-primary" title="Change Faculty">
+                                <i class="fas fa-exchange-alt me-1"></i>Change
+                            </a>
+                            <a href="{% url 'academics:subject_unassign_faculty' subject.pk %}" class="btn btn-sm btn-outline-danger" title="Unassign Faculty" 
+                               onclick="return confirm('Are you sure you want to unassign {{ subject.faculty.user.get_full_name }} from {{ subject.name }}?')">
+                                <i class="fas fa-user-times me-1"></i>Unassign
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'academics:subject_assign_faculty' subject.pk %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-user-plus me-1"></i>Assign Faculty
+                        </a>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{% if user_role == 'ADMIN' %}7{% else %}6{% endif %}" class="text-center py-5">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No subjects available.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

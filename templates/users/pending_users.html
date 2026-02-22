@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block title %}Pending User Approvals - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 2.5rem 0;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+    
+    .pending-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    .pending-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .user-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .user-details {
+        flex: 1;
+    }
+    
+    .user-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .user-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+    
+    .user-meta i {
+        color: var(--primary-color);
+        margin-right: 0.4rem;
+    }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+    
+    .role-faculty {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    
+    .role-student {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+    
+    .action-btns {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .btn-approve {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-approve:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-reject {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-reject:hover {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #9ca3af;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: #d1d5db;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container-fluid px-4">
+        <h1>
+            <i class="fas fa-user-clock me-2"></i>Pending User Approvals
+        </h1>
+        <p class="mb-0 opacity-90">Review and approve user registrations</p>
+    </div>
+</div>
+
+<div class="container-fluid px-4">
+    <div class="action-buttons">
+        <a href="{% url 'users:create_user' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Create User Manually
+        </a>
+        <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    {% if pending_users %}
+        <div class="pending-list">
+            {% for profile in pending_users %}
+            <div class="pending-card">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="user-name">
+                            <i class="fas fa-user-circle me-2"></i>{{ profile.user.get_full_name|default:profile.user.username }}
+                        </div>
+                        <div class="user-meta">
+                            <span>
+                                <i class="fas fa-at"></i>{{ profile.user.username }}
+                            </span>
+                            <span>
+                                <i class="fas fa-envelope"></i>{{ profile.user.email }}
+                            </span>
+                            <span>
+                                <i class="fas fa-clock"></i>{{ profile.created_at|date:"M d, Y - g:i A" }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="role-badge role-{{ profile.role|lower }}">
+                        <i class="fas fa-id-badge me-1"></i>{{ profile.role }}
+                    </div>
+                    <div class="action-btns">
+                        <form method="post" action="{% url 'users:approve_user' profile.user.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-approve">
+                                <i class="fas fa-check me-1"></i>Approve
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'users:reject_user' profile.user.id %}" style="display: inline;" 
+                              onsubmit="return confirm('Are you sure you want to reject and delete this user?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-reject">
+                                <i class="fas fa-times me-1"></i>Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <h3>No Pending Approvals</h3>
+            <p>All user registrations have been reviewed.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

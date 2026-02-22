@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Attendance Summary - Academic Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .summary-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+    
+    .summary-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title mb-4">
+    <i class="fas fa-clipboard-check me-2"></i>Attendance Summary
+</h1>
+
+<div class="summary-card">
+    <h2 class="summary-title">
+        <i class="fas fa-book-open me-2"></i>By Subject
+    </h2>
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-graduation-cap me-2"></i>Subject</th>
+                    <th><i class="fas fa-check-circle me-2"></i>Present</th>
+                    <th><i class="fas fa-times-circle me-2"></i>Absent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject, counts in summary.items %}
+                <tr>
+                    <td><strong>{{ subject }}</strong></td>
+                    <td><span class="badge bg-success">{{ counts.present }}</span></td>
+                    <td><span class="badge bg-danger">{{ counts.absent }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-4">
+                        <i class="fas fa-info-circle text-muted me-2"></i>
+                        <span class="text-muted">No attendance records yet.</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="summary-card">
+    <h2 class="summary-title">
+        <i class="fas fa-users me-2"></i>By Student
+    </h2>
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user me-2"></i>Student</th>
+                    <th><i class="fas fa-list me-2"></i>Total Classes</th>
+                    <th><i class="fas fa-user-check me-2"></i>Present</th>
+                    <th><i class="fas fa-chart-pie me-2"></i>Attendance %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student, stats in student_percentages.items %}
+                <tr>
+                    <td>{{ student }}</td>
+                    <td>{{ stats.total }}</td>
+                    <td><strong>{{ stats.present }}</strong></td>
+                    <td>
+                        <span class="badge {% if stats.percentage >= 75 %}bg-success{% elif stats.percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %} fs-6">
+                            {{ stats.percentage }}%
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-4">
+                        <i class="fas fa-user-slash fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No attendance data available.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

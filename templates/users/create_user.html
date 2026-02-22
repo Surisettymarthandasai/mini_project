@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+{% block title %}Create User - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 2.5rem 0;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .form-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section h3 {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .form-section h3 i {
+        margin-right: 0.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.1);
+    }
+    
+    .form-select {
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+    }
+    
+    .helptext {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0 0;
+    }
+    
+    .errorlist li {
+        color: #dc2626;
+        font-size: 0.875rem;
+        padding: 0.5rem;
+        background: #fee2e2;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-cancel {
+        background: white;
+        color: #6b7280;
+        border: 2px solid #e5e7eb;
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .btn-cancel:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container-fluid px-4">
+        <h1>
+            <i class="fas fa-user-plus me-2"></i>Create New User
+        </h1>
+        <p class="mb-0 opacity-90">Manually add a new user to the system</p>
+    </div>
+</div>
+
+<div class="container-fluid px-4">
+    <div class="form-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Please correct the errors below:</strong>
+                <ul class="mb-0 mt-2">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <h3><i class="fas fa-user"></i>Basic Information</h3>
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                    {{ form.username }}
+                    {% if form.username.help_text %}
+                        <small class="helptext">{{ form.username.help_text }}</small>
+                    {% endif %}
+                    {{ form.username.errors }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email Address</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.role.id_for_label }}">Role</label>
+                    {{ form.role }}
+                    {{ form.role.errors }}
+                </div>
+            </div>
+            
+            {%comment%} Faculty-specific fields {%endcomment%}
+            <div class="form-section" id="facultyFields" style="display:none;">
+                <h3><i class="fas fa-chalkboard-teacher"></i>Faculty Details</h3>
+                
+                <div class="form-group">
+                    <label for="{{ form.department.id_for_label }}">Department <span class="text-danger">*</span></label>
+                    {{ form.department }}
+                    {% if form.department.help_text %}
+                        <small class="helptext">{{ form.department.help_text }}</small>
+                    {% endif %}
+                    {{ form.department.errors }}
+                </div>
+                
+                <div class="form-group">
+                    <label>Assign Subjects</label>
+                    <div id="subjectsContainer" class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                        <p class="text-muted">Select a department to see available subjects</p>
+                    </div>
+                    {% if form.subjects.help_text %}
+                        <small class="helptext">{{ form.subjects.help_text }}</small>
+                    {% endif %}
+                    {{ form.subjects.errors }}
+                </div>
+            </div>
+            
+            {%comment%} Student-specific fields {%endcomment%}
+            <div class="form-section" id="studentFields" style="display:none;">
+                <h3><i class="fas fa-user-graduate"></i>Student Details</h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.batch.id_for_label }}">Batch <span class="text-danger">*</span></label>
+                            {{ form.batch }}
+                            {% if form.batch.help_text %}
+                                <small class="helptext">{{ form.batch.help_text }}</small>
+                            {% endif %}
+                            {{ form.batch.errors }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.semester.id_for_label }}">Semester <span class="text-danger">*</span></label>
+                            {{ form.semester }}
+                            {% if form.semester.help_text %}
+                                <small class="helptext">{{ form.semester.help_text }}</small>
+                            {% endif %}
+                            {{ form.semester.errors }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.section.id_for_label }}">Section</label>
+                    {{ form.section }}
+                    {% if form.section.help_text %}
+                        <small class="helptext">{{ form.section.help_text }}</small>
+                    {% endif %}
+                    {{ form.section.errors }}
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3><i class="fas fa-lock"></i>Password</h3>
+                
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}">Password</label>
+                    {{ form.password1 }}
+                    {% if form.password1.help_text %}
+                        <small class="helptext">{{ form.password1.help_text }}</small>
+                    {% endif %}
+                    {{ form.password1.errors }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                    {{ form.password2 }}
+                    {% if form.password2.help_text %}
+                        <small class="helptext">{{ form.password2.help_text }}</small>
+                    {% endif %}
+                    {{ form.password2.errors }}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-create">
+                <i class="fas fa-check me-2"></i>Create User
+            </button>
+            <a href="{% url 'users:pending_users' %}" class="btn btn-cancel">
+                <i class="fas fa-times me-2"></i>Cancel
+            </a>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('id_role');
+    const facultyFields = document.getElementById('facultyFields');
+    const studentFields = document.getElementById('studentFields');
+    const departmentSelect = document.getElementById('id_department');
+    const subjectsContainer = document.getElementById('subjectsContainer');
+    
+    // Show/hide fields based on role
+    roleSelect.addEventListener('change', function() {
+        const role = this.value;
+        
+        if (role === 'FACULTY') {
+            facultyFields.style.display = 'block';
+            studentFields.style.display = 'none';
+        } else if (role === 'STUDENT') {
+            facultyFields.style.display = 'none';
+            studentFields.style.display = 'block';
+        } else {
+            facultyFields.style.display = 'none';
+            studentFields.style.display = 'none';
+        }
+    });
+    
+    // Load subjects when department changes
+    departmentSelect.addEventListener('change', function() {
+        const department = this.value;
+        
+        if (!department) {
+            subjectsContainer.innerHTML = '<p class="text-muted">Select a department to see available subjects</p>';
+            return;
+        }
+        
+        subjectsContainer.innerHTML = '<p class="text-muted"><i class="fas fa-spinner fa-spin"></i> Loading subjects...</p>';
+        
+        fetch(`/api/subjects/${department}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.subjects && data.subjects.length > 0) {
+                    let html = '<div class="row">';
+                    
+                    // Group by semester
+                    const bySemester = {};
+                    data.subjects.forEach(subject => {
+                        if (!bySemester[subject.semester]) {
+                            bySemester[subject.semester] = [];
+                        }
+                        bySemester[subject.semester].push(subject);
+                    });
+                    
+                    // Display subjects grouped by semester
+                    Object.keys(bySemester).sort().forEach(semester => {
+                        html += `<div class="col-12 mb-3">
+                            <h6 class="text-primary">Semester ${semester}</h6>`;
+                        
+                        bySemester[semester].forEach(subject => {
+                            html += `
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="subjects" 
+                                       value="${subject.id}" id="subject_${subject.id}">
+                                <label class="form-check-label" for="subject_${subject.id}">
+                                    ${subject.code} - ${subject.name} (${subject.credits} credits)
+                                </label>
+                            </div>`;
+                        });
+                        
+                        html += '</div>';
+                    });
+                    
+                    html += '</div>';
+                    subjectsContainer.innerHTML = html;
+                } else {
+                    subjectsContainer.innerHTML = '<p class="text-warning">No subjects found for this department.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading subjects:', error);
+                subjectsContainer.innerHTML = '<p class="text-danger">Error loading subjects. Please try again.</p>';
+            });
+    });
+    
+    // Trigger role change on page load if role is pre-selected
+    if (roleSelect.value) {
+        roleSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% block title %}Welcome - Academic Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Smooth scrolling for parallax effect */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #10b981 100%);
+        color: white;
+        padding: 6rem 0;
+        margin: -2rem -2rem 4rem -2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200') center/cover;
+        opacity: 0.1;
+        animation: heroFloat 30s ease-in-out infinite;
+    }
+    
+    @keyframes heroFloat {
+        0%, 100% {
+            transform: scale(1) translateY(0);
+        }
+        50% {
+            transform: scale(1.05) translateY(-10px);
+        }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        animation: fadeInUp 1s ease;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 1s ease 0.2s both;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        animation: fadeInUp 1s ease 0.4s both;
+    }
+    
+    .hero-buttons {
+        animation: fadeInUp 1s ease 0.6s both;
+    }
+    
+    .btn-hero {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-hero-primary {
+        background: white;
+        color: var(--primary-color);
+    }
+    
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-hero-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .btn-hero-secondary:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 4rem 0;
+        position: relative;
+        background: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600') center/cover;
+        background-attachment: fixed;
+    }
+    
+    .features-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.97);
+        animation: subtlePulse 8s ease-in-out infinite;
+    }
+    
+    @keyframes subtlePulse {
+        0%, 100% {
+            opacity: 0.97;
+        }
+        50% {
+            opacity: 0.95;
+        }
+    }
+    
+    .features-section > * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+        text-align: center;
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 4rem;
+    }
+    
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        animation: fadeInUp 1s ease both;
+    }
+    
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+    .feature-card:nth-child(4) { animation-delay: 0.4s; }
+    .feature-card:nth-child(5) { animation-delay: 0.5s; }
+    .feature-card:nth-child(6) { animation-delay: 0.6s; }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+    
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+    }
+    
+    .feature-description {
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 4rem 0;
+        margin: 4rem -2rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+        background: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600') center/cover;
+        background-attachment: fixed;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.97);
+        animation: subtlePulse 8s ease-in-out infinite;
+    }
+    
+    @keyframes subtlePulse {
+        0%, 100% {
+            opacity: 0.97;
+        }
+        50% {
+            opacity: 0.93;
+        }
+    }
+    
+    .cta-section > * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .cta-description {
+        font-size: 1.2rem;
+        color: #4b5563;
+        margin-bottom: 2rem;
+        text-shadow: none;
+    }
+    
+    .cta-section .btn {
+        background: var(--primary-color);
+        color: white;
+        border: 2px solid var(--primary-color);
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    }
+    
+    .cta-section .btn:hover {
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="hero-title">Academic Management System</h1>
+            <p class="hero-subtitle">Streamline your academic operations with our comprehensive management platform</p>
+            <div class="hero-buttons">
+                <a href="{% url 'users:register' %}" class="btn btn-hero btn-hero-primary me-3">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{% url 'users:login' %}" class="btn btn-hero btn-hero-secondary">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="features-section">
+        <h2 class="section-title">Powerful Features</h2>
+        <p class="section-subtitle">Everything you need to manage academic operations efficiently</p>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card card-custom">
+                    <div class="feature-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="feature-title">Attendance Tracking</h3>
+                    <p class="feature-description">Track student attendance in real-time with detailed reports and percentage calculations</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card-custom">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Grade Management</h3>
+                    <p class="feature-description">Manage student marks, generate reports, and track academic performance</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card-custom">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3 class="feature-title">Assignment System</h3>
+                    <p class="feature-description">Create, distribute, and manage assignments with submission tracking</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card-custom">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="feature-title">Subject Management</h3>
+                    <p class="feature-description">Organize subjects, assign faculty, and manage course materials</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card-custom">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Role-Based Access</h3>
+                    <p class="feature-description">Secure system with different access levels for admin, faculty, and students</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card card-custom">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Detailed Reports</h3>
+                    <p class="feature-description">Generate comprehensive reports for attendance, grades, and performance analytics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number"><i class="fas fa-users"></i></span>
+                    <span class="stat-label">Student Management</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number"><i class="fas fa-chalkboard-teacher"></i></span>
+                    <span class="stat-label">Faculty Portal</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number"><i class="fas fa-chart-bar"></i></span>
+                    <span class="stat-label">Analytics Dashboard</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number"><i class="fas fa-shield-alt"></i></span>
+                    <span class="stat-label">Secure & Reliable</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="cta-section">
+        <h2 class="cta-title">Ready to Get Started?</h2>
+        <p class="cta-description">Join our platform and experience efficient academic management</p>
+        <a href="{% url 'users:register' %}" class="btn btn-custom-primary btn-lg">
+            <i class="fas fa-rocket me-2"></i>Create Your Account
+        </a>
+    </div>
+</div>
+{% endblock %}

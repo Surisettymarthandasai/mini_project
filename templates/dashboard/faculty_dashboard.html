@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% block title %}Faculty Dashboard - Academic Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 3rem 0;
+        margin: -2rem -2rem 3rem -2rem;
+        border-radius: 0 0 30px 30px;
+    }
+
+    .welcome-text {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .role-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-dark);
+    }
+
+    .subject-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .subject-card:hover {
+        border-color: #10b981;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+    }
+
+    .quick-action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-take-attendance {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-grade {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .btn-view {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .student-list-item {
+        border-left: 4px solid #10b981;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-light);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th {
+        background: #f9fafb;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    table tr:hover {
+        background: #f9fafb;
+    }
+
+    .badge-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-submitted {
+        background: #d1fae5;
+        color: #065f46;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container">
+        <h1 class="welcome-text">
+            <i class="fas fa-chalkboard-teacher me-2"></i>Welcome,
+            {{request.user.get_full_name|default:request.user.username }}!
+        </h1>
+        <p class="role-badge">
+            <i class="fas fa-id-badge me-1"></i>FACULTY &bull; {{ faculty.employee_number }}
+            &bull;{{faculty.get_department_display }}
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-label">Teaching Subjects</div>
+            <div class="stat-value">{{ stats.subjects_teaching }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-label">Total Students</div>
+            <div class="stat-value">{{ stats.total_students }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="stat-label">Attendance Records</div>
+            <div class="stat-value">{{ stats.attendance_records }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-label">Assignments Created</div>
+            <div class="stat-value">{{ stats.assignments_created }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-label">Pending Submissions</div>
+            <div class="stat-value">{{ stats.pending_submissions }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="stat-label">Marks Recorded</div>
+            <div class="stat-value">{{ stats.marks_recorded }}</div>
+        </div>
+    </div>
+
+    <!-- Teaching Subjects -->
+    <div class="section-card">
+        <h2 class="section-title">
+            <i class="fas fa-book-open me-2"></i>My Teaching Subjects
+        </h2>
+
+        {% if teaching_subjects %}
+        {% for subject in teaching_subjects %}
+        <div class="subject-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="mb-2">{{ subject.code }} - {{ subject.name }}</h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-credit-card me-1"></i>{{ subject.credits }} Credits •
+                        <i class="fas fa-layer-group ms-2 me-1"></i>Semester {{ subject.semester }} •
+                        <i class="fas fa-building ms-2 me-1"></i>{{ subject.get_department_display }}
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-users me-1"></i>
+                        <strong>{{ subject.student_count }}</strong> students enrolled
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="quick-action-btn btn-take-attendance">
+                        <i class="fas fa-clipboard-check me-1"></i>Attendance
+                    </button>
+                    <button class="quick-action-btn btn-grade">
+                        <i class="fas fa-pen me-1"></i>Grade
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-book fa-3x mb-3"></i>
+            <p>No subjects assigned yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Assignments -->
+    <div class="section-card">
+        <h2 class="section-title">
+            <i class="fas fa-clipboard-list me-2"></i>Recent Assignments
+        </h2>
+
+        {% if recent_assignments %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Assignment Title</th>
+                        <th>Subject</th>
+                        <th>Due Date</th>
+                        <th>Max Score</th>
+                        <th>Submissions</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in recent_assignments %}
+                    <tr>
+                        <td><strong>{{ assignment.title }}</strong></td>
+                        <td>{{ assignment.subject.code }}</td>
+                        <td>{{ assignment.due_date|date:"M d, Y" }}</td>
+                        <td>{{ assignment.max_score }}</td>
+                        <td>
+                            <span
+                                class="badge-status {{ assignment.submission_count|yesno:'badge-submitted,badge-pending' }}">
+                                {{ assignment.submission_count }} submitted
+                            </span>
+                        </td>
+                        <td>
+                            <button class="quick-action-btn btn-view">
+                                <i class="fas fa-eye me-1"></i>View
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-clipboard fa-3x mb-3"></i>
+            <p>No assignments created yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Students by Subject -->
+    <div class="section-card">
+        <h2 class="section-title">
+            <i class="fas fa-user-graduate me-2"></i>Students Enrolled in My Subjects
+        </h2>
+
+        {% if students_by_subject %}
+        {% for subject, students in students_by_subject.items %}
+        <div class="mb-4">
+            <h5 class="mb-3">
+                <i class="fas fa-book me-2"></i>{{ subject.code }} - {{ subject.name }}
+                <span class="text-muted ms-2">({{ students|length }} students)</span>
+            </h5>
+            <div class="row">
+                {% for student in students %}
+                <div class="col-md-6 mb-3">
+                    <div class="student-list-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ student.user.get_full_name|default:student.user.username }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-id-card me-1"></i>{{ student.registration_number }} •
+                                    <i class="fas fa-calendar ms-2 me-1"></i>Batch {{ student.batch }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-users fa-3x mb-3"></i>
+            <p>No students enrolled in your subjects yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Attendance Records -->
+    <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title mb-0">
+                <i class="fas fa-calendar-check me-2"></i>Recent Attendance Records
+            </h2>
+            <a href="{% url 'academics:attendance_detailed' %}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-eye me-1"></i>View All Attendance
+            </a>
+        </div>
+
+        {% if recent_attendance %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in recent_attendance %}
+                    <tr>
+                        <td>
+                            <strong>{{ record.student.user.get_full_name|default:record.student.user.username }}</strong>
+                            <br><small class="text-muted">{{ record.student.registration_number }}</small>
+                        </td>
+                        <td>{{ record.subject.code }}</td>
+                        <td>
+                            <div>{{ record.date|date:"M d, Y" }}</div>
+                            <small class="text-muted">{{ record.created_at|date:"g:i A" }}</small>
+                        </td>
+                        <td>
+                            {% if record.status == 'P' %}
+                            <span class="badge-status badge-submitted">Present</span>
+                            {% else %}
+                            <span class="badge-status badge-pending">Absent</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+            <p>No attendance records taken yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

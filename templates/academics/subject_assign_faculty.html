@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{% if subject.faculty %}Change Faculty for {{ subject.name }}{% else %}Assign Faculty to {{ subject.name }}{% endif %} - Academic Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-{% if subject.faculty %}exchange-alt{% else %}user-plus{% endif %} me-2"></i>
+                        {% if subject.faculty %}Change Faculty for{% else %}Assign Faculty to{% endif %} {{ subject.code }} - {{ subject.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Subject Details:</strong>
+                        <ul class="list-unstyled mt-2">
+                            <li><i class="fas fa-code me-2"></i>Code: {{ subject.code }}</li>
+                            <li><i class="fas fa-graduation-cap me-2"></i>Name: {{ subject.name }}</li>
+                            <li><i class="fas fa-building me-2"></i>Department: 
+                                {% if subject.department %}
+                                    {{ subject.get_department_display }}
+                                {% else %}
+                                    Common
+                                {% endif %}
+                            </li>
+                            <li><i class="fas fa-calendar me-2"></i>Semester: {{ subject.semester }}</li>
+                            <li><i class="fas fa-star me-2"></i>Credits: {{ subject.credits }}</li>
+                            <li><i class="fas fa-chalkboard-teacher me-2"></i>Current Faculty: 
+                                {% if subject.faculty %}
+                                    {{ subject.faculty.user.get_full_name }} ({{ subject.faculty.employee_number }})
+                                {% else %}
+                                    Not Assigned
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.faculty.id_for_label }}" class="form-label">
+                                <i class="fas fa-user me-1"></i>{% if subject.faculty %}Select New Faculty{% else %}Select Faculty{% endif %}
+                            </label>
+                            {{ form.faculty }}
+                            {% if form.faculty.errors %}
+                                <div class="text-danger">{{ form.faculty.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">{{ form.faculty.help_text }}</div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>{% if subject.faculty %}Change Faculty{% else %}Assign Faculty{% endif %}
+                            </button>
+                            <a href="{% url 'academics:subject_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Subjects
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

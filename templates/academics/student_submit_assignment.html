@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Submit Assignment - Academic Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Assignment
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if existing_submission %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Already Submitted!</strong> You have already submitted this assignment.
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Assignment Details</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Title:</th>
+                                <td>{{ assignment.title }}</td>
+                            </tr>
+                            <tr>
+                                <th>Subject:</th>
+                                <td>{{ assignment.subject }}</td>
+                            </tr>
+                            <tr>
+                                <th>Due Date:</th>
+                                <td>{{ assignment.due_date|date:"M d, Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Max Score:</th>
+                                <td>{{ assignment.max_score }}</td>
+                            </tr>
+                            <tr>
+                                <th>Submitted On:</th>
+                                <td>
+                                    {{ existing_submission.submitted_on|date:"M d, Y" }}
+                                    {% if existing_submission.status == 'LATE' %}
+                                        <span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Late</span>
+                                    {% else %}
+                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>On Time</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if existing_submission.submission_file %}
+                            <tr>
+                                <th>Uploaded File:</th>
+                                <td>
+                                    <a href="{{ existing_submission.submission_file.url }}" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i>Download File
+                                    </a>
+                                    <br><small class="text-muted">{{ existing_submission.submission_file.size|filesizeformat }}</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if existing_submission.score %}
+                            <tr>
+                                <th>Score:</th>
+                                <td>
+                                    <strong>{{ existing_submission.score }}/{{ assignment.max_score }}</strong>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if existing_submission.remarks %}
+                            <tr>
+                                <th>Faculty Remarks:</th>
+                                <td>{{ existing_submission.remarks }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="{% url 'academics:assignment_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Assignments
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="mb-4">
+                        <h5>Assignment Details</h5>
+                        <table class="table">
+                            <tr>
+                                <th width="30%">Title:</th>
+                                <td>{{ assignment.title }}</td>
+                            </tr>
+                            <tr>
+                                <th>Subject:</th>
+                                <td>{{ assignment.subject }}</td>
+                            </tr>
+                            <tr>
+                                <th>Faculty:</th>
+                                <td>{{ assignment.faculty }}</td>
+                            </tr>
+                            <tr>
+                                <th>Due Date:</th>
+                                <td>
+                                    {{ assignment.due_date|date:"M d, Y" }}
+                                    {% now "Y-m-d" as today %}
+                                    {% if assignment.due_date|date:"Y-m-d" < today %}
+                                        <span class="badge bg-danger ms-2"><i class="fas fa-exclamation-triangle"></i> Overdue</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Max Score:</th>
+                                <td>{{ assignment.max_score }}</td>
+                            </tr>
+                            {% if assignment.description %}
+                            <tr>
+                                <th>Description:</th>
+                                <td>{{ assignment.description|linebreaks }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Note:</strong> Once you submit this assignment, you cannot undo the submission or upload a different file. Make sure you have completed all the work and are uploading the correct file before submitting.
+                    </div>
+                    
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i>
+                            <strong>Error:</strong> {{ error }}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="submission_file" class="form-label">
+                                <i class="fas fa-file-upload me-2"></i>
+                                <strong>Upload Assignment File</strong>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                type="file" 
+                                class="form-control form-control-lg" 
+                                id="submission_file" 
+                                name="submission_file" 
+                                required
+                                accept=".pdf,.doc,.docx,.zip,.rar,.txt,.jpg,.jpeg,.png"
+                            >
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Accepted formats: PDF, DOC, DOCX, ZIP, RAR, TXT, JPG, PNG (Max size: 10MB)
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'academics:assignment_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Assignment
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
